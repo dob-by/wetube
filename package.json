@@ -9,7 +9,7 @@
     "url": "git+https://github.com/dob-by/wetube.git"
   },
   "scripts": {
-    "dev": "nodemon --exec babel-node src/server.js"
+    "dev": "nodemon --exec babel-node src/init.js"
   },
   "bugs": {
     "url": "https://github.com/dob-by/wetube/issues"
@@ -17,7 +17,7 @@
   "homepage": "https://github.com/dob-by/wetube#readme",
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^7.3.4",
+    "mongoose": "^5.12.3",
     "morgan": "^1.10.0",
     "pug": "^3.0.2"
   },
