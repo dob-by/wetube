@@ -1,4 +1,4 @@
-import Video from "../models/Video";
+import Video, { formatHashtags } from "../models/Video";
 /* callback 방식으로 작성
 console.log("start")
 Video.find({}, (error, videos) => {
@@ -44,16 +44,8 @@ export const postEdit = async (req, res) => {
   await Video.findByIdAndUpdate(id, {
     title,
     description,
-    hashtags: hashtags
-      .split(",")
-      .map((word) => (word.startsWith("#") ? word : `#${word}`)),
+    hashtags: Video.formatHashtags(hashtags),
   });
-  video.title = title;
-  video.description = description;
-  video.hashtags = hashtags
-    .split(",")
-    .map((word) => (word.startsWith("#") ? word : `#${word}`));
-  await video.save();
   return res.redirect(`/videos/${id}`);
 };
 
@@ -67,7 +59,7 @@ export const postUpload = async (req, res) => {
     await Video.create({
       title, // title(from schema): title from req.body
       description,
-      hashtags,
+      hashtags: Video.formatHashtags(hashtags),
     });
     return res.redirect("/");
   } catch (error) {
