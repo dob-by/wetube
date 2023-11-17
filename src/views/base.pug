@@ -1,7 +1,7 @@
 doctype html
 html(lang="ko")
     head
-        title #{pageTitle} | Wetube
+        title #{pageTitle} | #{siteName}
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     body
         header   
@@ -14,7 +14,7 @@ html(lang="ko")
                         li 
                             a(href="/logout") Log Out
                         li 
-                            a(href="/my-profile") ${loggedInUser.name}의 Profile
+                            a(href="/my-profile") #{loggedInUser.name}의 Profile
                     else
                         li 
                             a(href="/join") Join       
