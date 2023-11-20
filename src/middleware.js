@@ -2,6 +2,7 @@ export const localsMiddleware = (req, res, next) => {
   res.locals.loggedIn = Boolean(req.session.loggedIn);
   res.locals.siteName = "Wetube";
   res.locals.loggedInUser = req.session.user || {}; // 초기 req.session.user는 undefined
+  console.log(req.session.user);
   next();
 };
 

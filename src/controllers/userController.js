@@ -147,7 +147,26 @@ export const logout = (req, res) => {
 export const getEdit = (req, res) => {
   return res.render("edit-profile", { pageTitle: "Edit Profile" });
 };
-export const postEdit = (req, res) => {
-  return res.render("edit-profile");
+export const postEdit = async (req, res) => {
+  // const i = req.session.user.id와 동일(line 156제외)
+  const {
+    session: {
+      user: { _id },
+    },
+    // name, email, username, location변수는 form에서 설정해준 name
+    body: { name, email, username, location },
+  } = req;
+  const updatedUser = await User.findByIdAndUpdate(
+    _id,
+    {
+      name,
+      email,
+      username,
+      location,
+    },
+    { new: true } // 가장 최근에 update된 object만을 지정
+  );
+  req.session.user = updatedUser;
+  return res.redirect("/users/edit");
 };
 export const see = (req, res) => res.send("See User");
