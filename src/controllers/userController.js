@@ -1,6 +1,7 @@
 import User from "../models/User";
 import fetch from "node-fetch";
 import bcrypt from "bcrypt";
+import session from "express-session";
 
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 export const postJoin = async (req, res) => {
@@ -144,29 +145,80 @@ export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect("/");
 };
+
 export const getEdit = (req, res) => {
   return res.render("edit-profile", { pageTitle: "Edit Profile" });
 };
+
 export const postEdit = async (req, res) => {
-  // const i = req.session.user.id와 동일(line 156제외)
   const {
     session: {
-      user: { _id },
+      user: { _id, name: sessionUsername, email: sessionEmail, avatarUrl },
     },
-    // name, email, username, location변수는 form에서 설정해준 name
     body: { name, email, username, location },
+    file,
   } = req;
-  const updatedUser = await User.findByIdAndUpdate(
+  const usernameExists =
+    username != sessionUsername ? await User.exists({ username }) : undefined;
+  const emailExists =
+    email != sessionEmail ? await User.exists({ email }) : undefined;
+  if (usernameExists || emailExists) {
+    return res.status(400).render("edit-profile", {
+      pageTitle: "Edit Profile",
+      usernameErrorMessage: usernameExists
+        ? "This username is already taken"
+        : 0,
+      emailErrorMessage: emailExists ? "This email is already taken" : 0,
+    });
+  }
+
+  const updateUser = await User.findByIdAndUpdate(
     _id,
     {
+      avatarUrl: file ? file.path : avatarUrl,
       name,
       email,
       username,
       location,
     },
-    { new: true } // 가장 최근에 update된 object만을 지정
+    { new: true }
   );
-  req.session.user = updatedUser;
+  req.session.user = updateUser;
   return res.redirect("/users/edit");
 };
+export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly === true) {
+    return res.redirect("/");
+  }
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+export const postChangePassword = async (req, res) => {
+  // send notification
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirmation },
+  } = req;
+  const user = await User.findById(_id);
+  const ok = await bcrypt.compare(oldPassword, user.password); // 가장 최근 session의 user.pw와 비교
+  if (!ok) {
+    // check no.1: 기존pw(oldPassword) 잘못 입력한 경우
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The current password is incorrect",
+    });
+  }
+  // check no.2: 새 비밀번호와 비밀번호 확인이 일치하지 않은 경우
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The password does not match the confirmation",
+    });
+  }
+  user.password = newPassword;
+  await user.save();
+  return res.redirect("/users/logout"); // session의 user정보 업데이트
+};
+
 export const see = (req, res) => res.send("See User");

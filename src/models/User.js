@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
 
 // hashing password
 userSchema.pre("save", async function () {
-  console.log("Users password:", this.password);
   // this는 userController에서 create되는 User(await User.create...)
   // user가 입력한 password
   this.password = await bcrypt.hash(this.password, 5);
