@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String },
   name: { type: String, required: true },
   location: String,
+  // 1 owner - many videos
+  videos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Video" }],
 });
 
 // hashing password
@@ -16,7 +18,6 @@ userSchema.pre("save", async function () {
   // this는 userController에서 create되는 User(await User.create...)
   // user가 입력한 password
   this.password = await bcrypt.hash(this.password, 5);
-  console.log("Hashed password", this.password);
 });
 
 const User = mongoose.model("User", userSchema);
