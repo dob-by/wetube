@@ -94,7 +94,6 @@ export const finishGithubLogin = async (req, res) => {
       },
     })
   ).json();
-  console.log(tokenRequest);
   if ("access_token" in tokenRequest) {
     const { access_token } = tokenRequest;
     const apiUrl = "https://api.github.com";
@@ -105,7 +104,6 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
-    console.log(userData);
     const emailData = await (
       await fetch(`${apiUrl}/user/emails`, {
         headers: {
@@ -226,7 +224,6 @@ export const see = async (req, res) => {
   // see user profile
   const { id } = req.params;
   const user = await User.findById(id).populate("videos"); // videos의 정보를 모두 가져옴
-  console.log(user);
   if (!user) {
     return res.status(404).render("404", { pageTitle: "User not found." });
   }

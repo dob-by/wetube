@@ -17,7 +17,9 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function () {
   // this는 userController에서 create되는 User(await User.create...)
   // user가 입력한 password
-  this.password = await bcrypt.hash(this.password, 5);
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 5);
+  }
 });
 
 const User = mongoose.model("User", userSchema);
