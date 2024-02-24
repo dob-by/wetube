@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import session from "express-session";
+import flash from "express-flash";
 import MongoStore from "connect-mongo";
 import rootRouter from "./routers/rootRouter";
 import videoRouter from "./routers/videoRouter";
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 });
 app.use(logger);
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // session은 라우터 앞. session middleware가 사이트로 들어오는 모두를 기억
 app.use(
@@ -31,6 +33,7 @@ app.use(
   })
 );
 
+app.use(flash());
 app.use(localsMiddleware); // localsMiddleware가 session middleware 다음에 와야 함
 app.use("/uploads", express.static("uploads"));
 app.use("/static", express.static("assets"));

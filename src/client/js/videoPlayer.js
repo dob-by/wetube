@@ -19,12 +19,7 @@ let controlsTimeout = null;
 let controlsMovementTimeout = null;
 video.volume = volumeValue;
 
-const handlePlayClick = (event) => {
-  (event) => {
-    if (event.code === "Space") {
-      console.log("Space pressed"); //whatever you want to do when space is pressed
-    }
-  };
+const handlePlayClick = () => {
   if (video.paused) {
     video.play();
   } else {
@@ -142,4 +137,8 @@ timeline.addEventListener("change", handleTimelineSet);
 fullScreenBtn.addEventListener("click", handleFullscreen);
 videoContainer.addEventListener("mousemove", handleMouseMove);
 videoContainer.addEventListener("mouseleave", handleMouseLeave);
-document.addEventListener("keyup", handlePlayClick);
+document.addEventListener("keyup", (event) => {
+  if (event.code === "Space" && event.target.id !== "textarea") {
+    handlePlayClick();
+  }
+});
